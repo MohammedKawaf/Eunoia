@@ -88,7 +88,7 @@ class SignUpView:
             frame,
             font=self.controller.FONTS['body'],
             bg=self.controller.COLORS['background'],
-            fg=self.controller.COLORS['text'],
+            fg="gray",
             relief='flat',
             width=30,
             insertbackground=self.controller.COLORS['primary']
@@ -176,3 +176,8 @@ class SignUpView:
     # Hides the window   
     def hide(self):
         self.root.withdraw()
+
+    # Shows the login view
+    def show_login(self):
+        """Visar login-vyn"""
+        self.controller.show_login()
