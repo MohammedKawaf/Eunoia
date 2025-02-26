@@ -31,6 +31,14 @@ class Write_db:
         }
         self.database.child("todos").child(username).push(new_todo)
         
+    def add_journal(self, username, text):
+        current_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        new_journal = {
+            'text': text,
+            'mood': '3'
+        }
+        self.database.child("journals").child(username).child(current_date).set(new_journal)
+
     def delete_todo(self, username, todo):
         todos = self.database.child("todos").child(username).get()
         if todos.val():
@@ -38,6 +46,9 @@ class Write_db:
                 if value == todo:
                     self.database.child("todos").child(username).child(key).remove()
             
+    def delete_journal(self, username, date):
+        self.database.child("journals").child(username).child(date).remove()
+        
     def toggle_todo(self, username, todo):
         todos = self.database.child("todos").child(username).get()
         if todos.val():

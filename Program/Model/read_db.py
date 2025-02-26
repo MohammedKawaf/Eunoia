@@ -28,3 +28,9 @@ class Read_db:
         if todos.val():
             return todos.val()
         return []
+    
+    def get_journals(self, username):
+        journals = self.database.child("journals").child(username).get()
+        if journals.val():
+            return journals.val()
+        return {}

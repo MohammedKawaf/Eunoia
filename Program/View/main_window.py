@@ -10,10 +10,9 @@ class MainWindow:
         self.root.resizable(True, True)
         self.root.minsize(900, 600)
         
-        # Configure root background
         self.root.configure(bg=self.controller.COLORS['background'])
         
-        # Main container
+        # Main box
         self.main_frame = tk.Frame(self.root, bg=self.controller.COLORS['background'])
         self.main_frame.pack(fill='both', expand=True)
         
@@ -61,6 +60,8 @@ class MainWindow:
         
         # Menu buttons
         self.create_menu_button(menu_frame, "📋 Tasks", self.show_todo_content)
+        self.create_menu_button(menu_frame, "📔 Journal", self.show_journal_content)
+        self.create_menu_button(menu_frame, "📚 View Journals", self.show_journal_entries)
         
         # Logout button
         logout_btn = tk.Button(
@@ -97,7 +98,6 @@ class MainWindow:
         )
         btn.pack(fill='x')
         
-        # Hover effects
         btn.bind('<Enter>', lambda e: btn.configure(
             bg=self.controller.adjust_color(self.controller.COLORS['primary'], -20)
         ))
@@ -193,7 +193,6 @@ class MainWindow:
         )
         button.pack(padx=1, pady=1)
         
-        # Hover effects
         def on_enter(e):
             button.configure(bg=self.controller.adjust_color(color, -20))
             btn_frame.configure(bg=self.controller.adjust_color(
@@ -210,11 +209,9 @@ class MainWindow:
         return btn_frame
     
     def show_todo_content(self, mood_value=None):
-        # Clear content frame
         for widget in self.content_frame.winfo_children():
             widget.destroy()
             
-        # Spara mood-värdet om det finns
         if mood_value:
             self.controller.set_current_mood(mood_value)
             
@@ -223,13 +220,12 @@ class MainWindow:
         scrollbar = ttk.Scrollbar(self.content_frame, orient="vertical", command=canvas.yview)
         scrollable_frame = tk.Frame(canvas, bg=self.controller.COLORS['background'])
         
-        # Konfigurera canvas för att expandera
         self.content_frame.grid_rowconfigure(0, weight=1)
         self.content_frame.grid_columnconfigure(0, weight=1)
         canvas.grid(row=0, column=0, sticky="nsew")
         scrollbar.grid(row=0, column=1, sticky="ns")
         
-        # Bind mouse wheel event för scrollning
+        # Bind mouse wheel event for scrollning
         def _on_mousewheel(event):
             canvas.yview_scroll(int(-1*(event.delta/120)), "units")
         canvas.bind_all("<MouseWheel>", _on_mousewheel)
@@ -239,21 +235,18 @@ class MainWindow:
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
         
-        # Konfigurera canvas för att anpassa innehållet
         def configure_canvas(event):
             canvas.configure(width=event.width)
             canvas.itemconfig(frame_id, width=event.width)
         
         canvas.bind('<Configure>', configure_canvas)
         
-        # Skapa fönster i canvas
         frame_id = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         
-        # Create todo container
+        # Create todo box
         todo_frame = tk.Frame(scrollable_frame, bg=self.controller.COLORS['background'])
         todo_frame.pack(fill='both', expand=True, padx=20, pady=20)
         
-        # Header med välkomstmeddelande och humörbeskrivning
         if mood_value:
             mood_description = self.controller.get_mood_description(mood_value)
             mood_label = tk.Label(
@@ -265,7 +258,7 @@ class MainWindow:
             )
             mood_label.pack(pady=(0, 20))
         
-        # Visa rekommendationer baserat på humör
+        # Show recomendations based on mood
         recommendations = self.controller.get_mood_recommendations()
         if recommendations:
             rec_frame = tk.Frame(todo_frame, bg=self.controller.COLORS['light_gray'])
@@ -292,7 +285,7 @@ class MainWindow:
                 )
                 rec_label.pack(anchor='w', padx=20, pady=2)
         
-        # Lägg till ny task-sektion
+        # Add a new task section
         add_frame = tk.Frame(todo_frame, bg=self.controller.COLORS['background'])
         add_frame.pack(fill='x', pady=20)
         
@@ -313,7 +306,7 @@ class MainWindow:
         )
         add_btn.pack(side='right')
         
-        # Visa befintliga tasks
+        # Show current tasks
         tasks_label = tk.Label(
             todo_frame,
             text="My tasks: ",
@@ -383,6 +376,151 @@ class MainWindow:
         if messagebox.askyesno("Confirm", "Delete this task?"):
             self.controller.delete_todo(todo)
             self.update_todos_list()
+
+    def show_journal_content(self):
+        # Clear content frame
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+            
+        # Create journal box
+        journal_frame = tk.Frame(self.content_frame, bg=self.controller.COLORS['background'])
+        journal_frame.pack(fill='both', expand=True, padx=40, pady=20)
+        
+        # Title
+        title = tk.Label(
+            journal_frame,
+            text="My Journal",
+            font=self.controller.FONTS['heading'],
+            bg=self.controller.COLORS['background'],
+            fg=self.controller.COLORS['text']
+        )
+        title.pack(pady=20)
+        
+        # Journal text area
+        self.journal_text = tk.Text(
+            journal_frame,
+            font=self.controller.FONTS['body'],
+            bg=self.controller.COLORS['light_gray'],
+            fg=self.controller.COLORS['text'],
+            relief='flat',
+            padx=10,
+            pady=10,
+            height=10
+        )
+        self.journal_text.pack(fill='both', expand=True, pady=10)
+        
+        # Save button
+        save_btn = self.create_modern_button(
+            journal_frame,
+            "Save Entry",
+            self.save_journal,
+            self.controller.COLORS['success']
+        )
+        save_btn.pack(pady=20)
+        
+    def save_journal(self):
+        text = self.journal_text.get('1.0', 'end-1c')
+        if text.strip():
+            if self.controller.save_journal(text):
+                messagebox.showinfo("Success", "Journal entry saved!")
+                self.journal_text.delete('1.0', 'end')
+            else:
+                messagebox.showerror("Error", "Failed to save journal entry")
+        else:
+            messagebox.showwarning("Warning", "Journal entry cannot be empty")
+            
+    def show_journal_entries(self):
+        # Clear content frame
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+            
+        canvas = tk.Canvas(self.content_frame, bg=self.controller.COLORS['background'])
+        scrollbar = ttk.Scrollbar(self.content_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = tk.Frame(canvas, bg=self.controller.COLORS['background'])
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True)
+        
+        # Title
+        title = tk.Label(
+            scrollable_frame,
+            text="Journal Entries",
+            font=self.controller.FONTS['heading'],
+            bg=self.controller.COLORS['background'],
+            fg=self.controller.COLORS['text']
+        )
+        title.pack(pady=20)
+        
+        # Display journal entries
+        journals = self.controller.get_journals()
+        if journals:
+            for date, entry in sorted(journals.items(), reverse=True):
+                self.create_journal_entry_widget(scrollable_frame, date, entry)
+        else:
+            no_entries = tk.Label(
+                scrollable_frame,
+                text="No journal entries yet",
+                font=self.controller.FONTS['body'],
+                bg=self.controller.COLORS['background'],
+                fg=self.controller.COLORS['text']
+            )
+            no_entries.pack(pady=20)
+            
+    def create_journal_entry_widget(self, parent, date, entry):
+        entry_frame = tk.Frame(
+            parent,
+            bg=self.controller.COLORS['light_gray'],
+            relief='flat',
+            bd=1
+        )
+        entry_frame.pack(fill='x', pady=5, padx=10)
+        
+        date_label = tk.Label(
+            entry_frame,
+            text=date,
+            font=self.controller.FONTS['subheading'],
+            bg=self.controller.COLORS['light_gray'],
+            fg=self.controller.COLORS['text']
+        )
+        date_label.pack(anchor='w', padx=10, pady=5)
+        
+        text_widget = tk.Text(
+            entry_frame,
+            font=self.controller.FONTS['body'],
+            bg=self.controller.COLORS['light_gray'],
+            fg=self.controller.COLORS['text'],
+            height=4,
+            wrap='word',
+            relief='flat'
+        )
+        text_widget.pack(fill='x', padx=10, pady=(0, 5))
+        text_widget.insert('1.0', entry['text'])
+        text_widget.configure(state='disabled')
+        
+        delete_btn = tk.Button(
+            entry_frame,
+            text="Delete Entry",
+            font=self.controller.FONTS['small'],
+            bg=self.controller.COLORS['warning'],
+            fg='white',
+            relief='flat',
+            cursor='hand2',
+            command=lambda: self.delete_journal_entry(date)
+        )
+        delete_btn.pack(pady=(0, 10))
+        
+    def delete_journal_entry(self, date):
+        if messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this journal entry?"):
+            self.controller.delete_journal(date)
+            self.show_journal_entries()
             
     def show(self):
-        self.root.deiconify()  # Show the main window
+        self.root.deiconify()  
