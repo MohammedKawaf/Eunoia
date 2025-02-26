@@ -10,15 +10,12 @@ class LoginView:
         self.root.resizable(True, True)
         self.root.minsize(900, 600)
         
-        # Hide the window initially
         self.root.withdraw()
         
-        # Configure root background
         self.root.configure(bg=self.controller.COLORS['background'])
         
         self.setup_ui()
         
-    # Sets up the user interface (UI) elements of the login window
     def setup_ui(self):
         # Create main container with modern shadow effect
         container = tk.Frame(
@@ -74,7 +71,6 @@ class LoginView:
         )
         subtitle.pack()
         
-        # Right panel
         right_panel = tk.Frame(container, bg='white', width=400, height=500)
         right_panel.pack(side='right', fill='y')
         right_panel.pack_propagate(False)
@@ -122,7 +118,6 @@ class LoginView:
         register_link.pack(pady=10)
         register_link.bind('<Button-1>', lambda e: self.controller.show_sign_up())
         
-    # Creates a modern entry widget with placeholder text and optional masking (e.g. for password)
     def create_modern_entry(self, parent, placeholder, show=None):
         frame = tk.Frame(parent, bg='white')
         frame.pack(fill='x', padx=40, pady=10)
@@ -142,17 +137,14 @@ class LoginView:
         entry.bind('<FocusOut>', lambda e: self.on_entry_focus_out(entry, placeholder))
         entry.pack(fill='x', pady=(5, 0))
         
-        # Underline
         underline = tk.Frame(frame, height=2, bg=self.controller.COLORS['light_gray'])
         underline.pack(fill='x', pady=(2, 0))
         
-        # Hover effect
         entry.bind('<Enter>', lambda e: underline.configure(bg=self.controller.COLORS['primary']))
         entry.bind('<Leave>', lambda e: underline.configure(bg=self.controller.COLORS['light_gray']))
         
         return entry
         
-    # Event handler when an entry field gains focus (removes placeholder text)
     def on_entry_focus_in(self, entry, placeholder):
         if entry.get() == placeholder:
             entry.delete(0, 'end')
@@ -160,7 +152,6 @@ class LoginView:
                 entry.config(show="●")
             entry.config(fg=self.controller.COLORS['text'])
             
-    # Event handler when an entry field loses focus (restores placeholder text if the field is empty)
     def on_entry_focus_out(self, entry, placeholder):
         if entry.get() == "":
             entry.insert(0, placeholder)
@@ -168,7 +159,6 @@ class LoginView:
                 entry.config(show="")
             entry.config(fg='gray')
             
-    # Attempts to log the user in using the entered username and password
     def login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
@@ -178,7 +168,6 @@ class LoginView:
             return
             
         try:
-            # Try to login with Firebase
             if self.controller.login(username, password):
                 self.clear_entries()
                 self.hide()
@@ -188,7 +177,6 @@ class LoginView:
         except Exception as e:
             messagebox.showerror("Error", f"Login failed: {str(e)}")
             
-    # Clears the username and password entry fields
     def clear_entries(self):
         self.username_entry.delete(0, 'end')
         self.username_entry.insert(0, "Email Address")
@@ -196,18 +184,15 @@ class LoginView:
         self.password_entry.insert(0, "Password")
         self.password_entry.config(show="")
         
-    # Shows the login window and resets the fields
     def show(self):
-        self.clear_entries()  # Clear fields when the window is shown
+        self.clear_entries()  
         self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
         
-    # Hides the login window
     def hide(self):
         self.root.withdraw()
         
-    # Closes the login window and quits the application if the window is closed
     def on_close(self):
         self.hide()
         self.controller.quit()

@@ -1,10 +1,10 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from Program.Model.read_db import Read_db
+from unittest.mock import patch
+from read_db import Read_db
 
 class TestReadDB(unittest.TestCase):
     
-    @patch("Program.Model.read_db.pyrebase")
+    @patch("read_db.pyrebase")
     def setUp(self, mock_pyrebase):
         self.mock_pyrebase = mock_pyrebase
         self.mock_firebase = mock_pyrebase.initialize_app.return_value
@@ -28,4 +28,7 @@ class TestReadDB(unittest.TestCase):
         
         result = self.read_db.get_todos("user1")
         self.assertEqual(result, [])
+
+if __name__ == '__main__':
+    unittest.main()
          

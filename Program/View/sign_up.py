@@ -10,13 +10,12 @@ class SignUpView:
         self.root.resizable(True, True)
         self.root.minsize(900, 600)
         
-        # Configure root background
         self.root.configure(bg=self.controller.COLORS['background'])
         
         self.setup_ui()
         
     def setup_ui(self):
-        # Create register container
+        # Create register box
         register_frame = tk.Frame(self.root, bg=self.controller.COLORS['background'])
         register_frame.place(relx=0.5, rely=0.5, anchor='center')
         
@@ -101,7 +100,6 @@ class SignUpView:
         
         return frame, entry
 
-    # Creates a modern styled button with hover effects   
     def create_modern_button(self, parent, text, command):
         btn_frame = tk.Frame(parent, bg=self.controller.COLORS['card_shadow'])
         
@@ -120,7 +118,6 @@ class SignUpView:
         )
         button.pack(padx=1, pady=1)
         
-        # Hover effects
         def on_enter(e):
             button.configure(
                 bg=self.controller.adjust_color(self.controller.COLORS['primary'], -20)

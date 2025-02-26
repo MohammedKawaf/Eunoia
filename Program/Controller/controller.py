@@ -16,24 +16,22 @@ class Controller:
         self.current_user = None
         self.current_mood = None
         
-        # Skapa endast en Tk-instans
         self.root = tk.Tk()
-        self.root.withdraw()  # Göm huvudfönstret
+        self.root.withdraw()
         
-        # Färger och typsnitt som kan användas av alla vyer
         self.COLORS = {
-            'primary': "#4A90E2",      # Modern blue
-            'secondary': "#357ABD",    # Darker blue
-            'accent': "#F5F9FF",       # Light blue
-            'background': "#FFFFFF",    # Pure white
-            'text': "#2C3E50",         # Modern dark blue-gray
-            'light_gray': "#F8F9FA",   # Lighter gray
-            'success': "#27AE60",      # Green
-            'warning': "#E74C3C",      # Red
-            'gradient_start': "#4A90E2",  # Start of gradient
-            'gradient_end': "#357ABD",    # End of gradient
-            'card_shadow': "#E1E8ED",   # Shadow color
-            'hover': "#EDF2F7"         # Hover state color
+            'primary': "#4A90E2",      
+            'secondary': "#357ABD",    
+            'accent': "#F5F9FF",       
+            'background': "#FFFFFF",    
+            'text': "#2C3E50",         
+            'light_gray': "#F8F9FA",   
+            'success': "#27AE60",      
+            'warning': "#E74C3C",      
+            'gradient_start': "#4A90E2",  
+            'gradient_end': "#357ABD",    
+            'card_shadow': "#E1E8ED",   
+            'hover': "#EDF2F7"         
         }
         
         self.FONTS = {
@@ -45,7 +43,6 @@ class Controller:
             'small': ('Segoe UI', 10, 'normal')
         }
         
-        # Definiera mood recommendations
         self.mood_recommendations = {
             1: [
                 "Take a gentle walk in nature",
@@ -84,7 +81,6 @@ class Controller:
             ]
         }
 
-        # Initiera vyer
         self.login_view = None
         self.main_window = None
         self.sign_up_view = None
@@ -100,21 +96,34 @@ class Controller:
             return True
         return False
 
+    def save_journal(self, text):
+            if self.current_user and text.strip():
+                self.write_db.add_journal(self.current_user, text)
+                return True
+            return False
+
     def get_todos(self):
         if self.current_user:
             todos = self.read_db.get_todos(self.current_user)
             if todos:
-                # Konvertera från dictionary till lista om det behövs
                 if isinstance(todos, dict):
                     return [value for value in todos.values()]
                 return todos
         return []
 
+    def get_journals(self):
+            if self.current_user:
+                return self.read_db.get_journals(self.current_user)
+            return {}
+
     def delete_todo(self, todo):
         if self.current_user:
             self.write_db.delete_todo(self.current_user, todo)
 
-
+    def delete_journal(self, date):
+        if self.current_user:
+            self.write_db.delete_journal(self.current_user, date)
+                
     def toggle_todo(self, todo):
         if self.current_user:
             self.write_db.toggle_todo(self.current_user, todo)
@@ -180,11 +189,11 @@ class Controller:
         self.current_user = None
         self.current_mood = None
         if self.main_window:
-            self.main_window.root.destroy()  # Stäng huvudfönstret helt
-            self.main_window = None  # Ta bort referensen
+            self.main_window.root.destroy()  
+            self.main_window = None  
         if self.login_view:
-            self.login_view.clear_entries()  # Rensa inloggningsfälten
-            self.login_view.show()  # Visa inloggningsfönstret igen
+            self.login_view.clear_entries()  
+            self.login_view.show()  
 
     def adjust_color(self, color, amount):
         def clamp(x): return max(0, min(x, 255))
@@ -194,7 +203,6 @@ class Controller:
         b = clamp(int(color[5:7], 16) + amount)
         return f'#{r:02x}{g:02x}{b:02x}'
     
-    # Closes the entire application
     def quit(self):
         self.root.quit()
         self.root.destroy()
