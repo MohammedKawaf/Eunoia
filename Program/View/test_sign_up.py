@@ -40,12 +40,10 @@ class TestSignUpView(unittest.TestCase):
         self.root.destroy()
 
     def test_initial_state(self):
-        """Testa initialt tillstånd"""
         self.assertEqual(self.sign_up_view.username_entry.get(), "Username")
         self.assertEqual(self.sign_up_view.password_entry.get(), "Password")
 
     def test_window_properties(self):
-        """Testa fönsteregenskaper"""
         self.root.update()
         self.assertEqual(self.sign_up_view.root.title(), "EUNOIA - Register")
         self.assertTrue(self.sign_up_view.root.resizable()[0])
@@ -54,33 +52,28 @@ class TestSignUpView(unittest.TestCase):
         self.assertEqual(minsize, (900, 600))
 
     def test_entry_focus_in_username(self):
-        """Testa focus in för användarnamn"""
         self.sign_up_view.on_entry_focus_in(self.sign_up_view.username_entry, "Username")
         self.assertEqual(self.sign_up_view.username_entry.get(), "")
         self.assertEqual(self.sign_up_view.username_entry.cget("fg"), self.mock_controller.COLORS['text'])
 
     def test_entry_focus_in_password(self):
-        """Testa focus in för lösenord"""
         self.sign_up_view.on_entry_focus_in(self.sign_up_view.password_entry, "Password")
         self.assertEqual(self.sign_up_view.password_entry.get(), "")
         self.assertEqual(self.sign_up_view.password_entry.cget("show"), "●")
 
     def test_entry_focus_out_username(self):
-        """Testa focus out för användarnamn"""
         self.sign_up_view.username_entry.delete(0, 'end')
         self.sign_up_view.on_entry_focus_out(self.sign_up_view.username_entry, "Username")
         self.assertEqual(self.sign_up_view.username_entry.get(), "Username")
         self.assertEqual(self.sign_up_view.username_entry.cget("fg"), "gray")
 
     def test_entry_focus_out_password(self):
-        """Testa focus out för lösenord"""
         self.sign_up_view.password_entry.delete(0, 'end')
         self.sign_up_view.on_entry_focus_out(self.sign_up_view.password_entry, "Password")
         self.assertEqual(self.sign_up_view.password_entry.get(), "Password")
         self.assertEqual(self.sign_up_view.password_entry.cget("show"), "")
 
     def test_modern_entry_creation(self):
-        """Testa skapande av moderna inmatningsfält"""
         frame, entry = self.sign_up_view.create_modern_entry(self.sign_up_view.root, "Test")
         self.assertEqual(entry.get(), "Test")
         self.assertEqual(entry.cget("relief"), "flat")
@@ -88,7 +81,6 @@ class TestSignUpView(unittest.TestCase):
         self.assertEqual(frame.cget("bg"), self.mock_controller.COLORS['card_shadow'])
 
     def test_modern_button_creation(self):
-        """Testa skapande av moderna knappar"""
         test_command = MagicMock()
         btn_frame = self.sign_up_view.create_modern_button(self.sign_up_view.root, "Test", test_command)
         button = btn_frame.winfo_children()[0]
@@ -98,7 +90,6 @@ class TestSignUpView(unittest.TestCase):
         self.assertEqual(button.cget("bg"), self.mock_controller.COLORS['primary'])
 
     def test_register_empty_fields(self):
-        """Testa registrering med tomma fält"""
         self.sign_up_view.username_entry.delete(0, 'end')
         self.sign_up_view.username_entry.insert(0, "Username")
         self.sign_up_view.password_entry.delete(0, 'end')
@@ -109,7 +100,6 @@ class TestSignUpView(unittest.TestCase):
             mock_error.assert_called_with("Error", "Please fill in all fields")
 
     def test_register_success(self):
-        """Testa lyckad registrering"""
         self.sign_up_view.username_entry.delete(0, 'end')
         self.sign_up_view.username_entry.insert(0, "testuser")
         self.sign_up_view.password_entry.delete(0, 'end')
@@ -123,7 +113,6 @@ class TestSignUpView(unittest.TestCase):
             self.mock_controller.show_login.assert_called_once()
 
     def test_register_failure(self):
-        """Testa misslyckad registrering"""
         self.sign_up_view.username_entry.delete(0, 'end')
         self.sign_up_view.username_entry.insert(0, "existinguser")
         self.sign_up_view.password_entry.delete(0, 'end')
@@ -136,7 +125,6 @@ class TestSignUpView(unittest.TestCase):
             mock_error.assert_called_with("Error", "Username already exists")
 
     def test_show_hide(self):
-        """Testa show och hide funktioner"""
         self.sign_up_view.show()
         self.assertEqual(self.sign_up_view.root.state(), 'normal')
         self.sign_up_view.hide()

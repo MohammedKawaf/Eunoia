@@ -32,12 +32,10 @@ class TestLoginView(unittest.TestCase):
         self.root.destroy()
 
     def test_initial_state(self):
-        """Testa initialt tillstånd"""
         self.assertEqual(self.login_view.username_entry.get(), "Email Address")
         self.assertEqual(self.login_view.password_entry.get(), "Password")
 
     def test_clear_entries(self):
-        """Testa rensning av fält"""
         self.login_view.username_entry.delete(0, 'end')
         self.login_view.username_entry.insert(0, "test@test.com")
         self.login_view.password_entry.delete(0, 'end')
@@ -49,23 +47,19 @@ class TestLoginView(unittest.TestCase):
         self.assertEqual(self.login_view.password_entry.get(), "Password")
 
     def test_entry_focus_in(self):
-        """Testa focus in händelser"""
         self.login_view.on_entry_focus_in(self.login_view.username_entry, "Email Address")
         self.assertEqual(self.login_view.username_entry.get(), "")
 
     def test_entry_focus_out(self):
-        """Testa focus out händelser"""
         self.login_view.on_entry_focus_out(self.login_view.username_entry, "Email Address")
         self.assertEqual(self.login_view.username_entry.get(), "Email Address")
 
     def test_login_empty_fields(self):
-        """Testa login med tomma fält"""
         with patch('tkinter.messagebox.showerror') as mock_error:
             self.login_view.login()
             mock_error.assert_called_with("Error", "Please fill in all fields")
 
     def test_login_success(self):
-        """Testa lyckad inloggning"""
         self.login_view.username_entry.delete(0, 'end')
         self.login_view.username_entry.insert(0, "test@test.com")
         self.login_view.password_entry.delete(0, 'end')
@@ -79,7 +73,6 @@ class TestLoginView(unittest.TestCase):
         self.mock_controller.show_main_window.assert_called_once()
 
     def test_login_failure(self):
-        """Testa misslyckad inloggning"""
         self.login_view.username_entry.delete(0, 'end')
         self.login_view.username_entry.insert(0, "test@test.com")
         self.login_view.password_entry.delete(0, 'end')
@@ -92,18 +85,15 @@ class TestLoginView(unittest.TestCase):
             mock_error.assert_called_with("Error", "Invalid email or password")
 
     def test_show_hide(self):
-        """Testa show och hide funktioner"""
         self.login_view.show()
         self.assertEqual(self.login_view.root.state(), 'normal')
         self.login_view.hide()
         self.assertEqual(self.login_view.root.state(), 'withdrawn')
 
     def test_window_title(self):
-        """Testa fönster titel"""
         self.assertEqual(self.login_view.root.title(), "EUNOIA - We Care")
 
     def test_on_close(self):
-        """Testa on_close funktion"""
         self.login_view.on_close()
         self.mock_controller.quit.assert_called_once()
 
