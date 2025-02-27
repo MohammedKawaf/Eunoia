@@ -12,6 +12,9 @@ class TestMainWindow(unittest.TestCase):
             'primary': '#4A90E2',
             'text': '#000000',
             'light_gray': '#F5F5F5',
+            'success': '#28A745',
+            'warning': '#DC3545',
+            'card_shadow': '#E0E0E0',
         }
         self.mock_controller.FONTS = {
             'heading': ('Arial', 24, 'bold'),
