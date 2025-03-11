@@ -106,8 +106,16 @@ class Controller:
         if self.current_user:
             todos = self.read_db.get_todos(self.current_user)
             if todos:
+                # Convert to list if it's a dictionary
                 if isinstance(todos, dict):
-                    return [value for value in todos.values()]
+                    # Ensure each todo has a key field for tracking
+                    todos_list = []
+                    for key, value in todos.items():
+                        value['key'] = key  # Store the database key
+                        todos_list.append(value)
+                    todos = todos_list
+                # Sort by creation date to maintain order
+                todos.sort(key=lambda x: x.get('created_at', ''))
                 return todos
         return []
 
@@ -125,7 +133,7 @@ class Controller:
             self.write_db.delete_journal(self.current_user, date)
                 
     def toggle_todo(self, todo):
-        if self.current_user:
+        if self.current_user and 'key' in todo:
             self.write_db.toggle_todo(self.current_user, todo)
 
     def set_current_mood(self, mood):

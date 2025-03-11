@@ -212,6 +212,11 @@ class MainWindow:
         for widget in self.content_frame.winfo_children():
             widget.destroy()
             
+        # If no mood is set, show mood assessment first
+        if mood_value is None and self.controller.current_mood is None:
+            self.show_mood_assessment()
+            return
+            
         if mood_value:
             self.controller.set_current_mood(mood_value)
             
@@ -343,11 +348,18 @@ class MainWindow:
                 )
                 todo_item.pack(fill='x', pady=2)
                 
-                done_var = tk.BooleanVar(value=todo['done'])
+                done_var = tk.BooleanVar(value=todo.get('done', False))
+                
+                def make_toggle_command(t, var):
+                    def toggle_command():
+                        t['done'] = var.get()
+                        self.controller.toggle_todo(t)
+                    return toggle_command
+                
                 checkbox = tk.Checkbutton(
                     todo_item,
                     var=done_var,
-                    command=lambda t=todo: self.controller.toggle_todo(t),
+                    command=make_toggle_command(todo, done_var),
                     bg=self.controller.COLORS['background']
                 )
                 checkbox.pack(side='left')

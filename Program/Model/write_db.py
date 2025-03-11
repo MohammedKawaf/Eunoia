@@ -50,12 +50,10 @@ class Write_db:
         self.database.child("journals").child(username).child(date).remove()
         
     def toggle_todo(self, username, todo):
-        todos = self.database.child("todos").child(username).get()
-        if todos.val():
-            for key, value in todos.val().items():
-                if value['task'] == todo['task'] and value['created_at'] == todo['created_at']:
-                    value['done'] = not value['done']
-                    self.database.child("todos").child(username).child(key).update({'done': value['done']})
+        if 'key' in todo:
+            self.database.child("todos").child(username).child(todo['key']).update({
+                'done': todo['done']
+            })
         
     def add_mood_recommendations(self, username, recommendations, mood):
         for rec in recommendations:
